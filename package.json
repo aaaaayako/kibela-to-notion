@@ -10,6 +10,7 @@
     "start:UPLOAD_IMAGES": "yarn start UPLOAD_IMAGES",
     "start:UPLOAD_IMAGES:GD": "yarn start UPLOAD_IMAGES -s GoogleDrive",
     "start:UPLOAD_IMAGES:S3": "yarn start UPLOAD_IMAGES -s S3",
+    "start:SET_NOTION_IMAGES_FOR_REDIS": "yarn start SET_NOTION_IMAGES_FOR_REDIS",
     "build": "tsc -p .",
     "test": "jest"
   },
@@ -17,7 +18,7 @@
     "@aws-sdk/client-cognito-identity": "^3.28.0",
     "@aws-sdk/client-s3": "^3.28.0",
     "@aws-sdk/credential-provider-cognito-identity": "^3.28.0",
-    "@notionhq/client": "^0.2.3",
+    "@notionhq/client": "2.2.11",
     "@types/command-line-args": "^5.2.0",
     "@types/ioredis": "^4.26.6",
     "@types/jest": "^26.0.24",

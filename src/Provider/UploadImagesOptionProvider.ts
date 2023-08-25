@@ -22,6 +22,8 @@ const optionDefinitions: OptionDefinition[] = [
         return value as Config.Storage.Mode;
       } else if ((value as Config.Storage.Mode) === "GoogleDrive") {
         return value;
+      } else if ((value as Config.Storage.Mode) === "Notion") {
+        return value;
       } else {
         throw new Error(`Invalid storage type: actual input is ${value}`);
       }
