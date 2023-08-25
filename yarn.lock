@@ -1328,10 +1328,10 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
-"@notionhq/client@^0.2.3":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@notionhq/client/-/client-0.2.4.tgz#8d908a781501f4110166af05ef2da61c00782422"
-  integrity sha512-omokCm0TwRH0DTCkHGCX4V4jEd7XQoMvQ9d7bcLn+mZgnTW5uU50T+vqQudr6p3y3BMeCXROI/u+JmU2RJT/AQ==
+"@notionhq/client@2.2.11":
+  version "2.2.11"
+  resolved "https://registry.yarnpkg.com/@notionhq/client/-/client-2.2.11.tgz#7a280ea8f3b9d09019f59f6545977749e7b96d6e"
+  integrity sha512-yTKeVu0fB9PtlK9eQwN6y+MEq0J0vu1MPP7j5bme9+KTenH4OTcOAx/70+LgvN4Z4RSsymQxdXrtcLHMFN9ZuA==
   dependencies:
     "@types/node-fetch" "^2.5.10"
     node-fetch "^2.6.1"
