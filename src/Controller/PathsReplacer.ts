@@ -41,8 +41,9 @@ export class PathsReplacer {
       });
 
       for await (let line of rl) {
-        const REGEXP = /'..\/attachments\/([0-9]+)\.([a-zA-Z]+)'/;
+        const REGEXP = /..\/attachments\/([0-9]+)\.([a-zA-Z]+)/;
         const found = line.match(REGEXP);
+
         if (found) {
           const [src, fileName, mineType] = found;
           const fileURL = await this.redisRepo.getKey(
