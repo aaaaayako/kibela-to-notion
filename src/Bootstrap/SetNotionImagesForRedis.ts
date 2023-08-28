@@ -33,7 +33,7 @@ export const SetNotionImagesToRedis = async() => {
 
     if (propertyItems?.files?.length > 0) {
         for (let index = 0; index < propertyItems.files.length; index++) {
-            await redis.set(propertyItems.files[index].name, `"${propertyItems.files[index].file.url}"`)
+            await redis.set(propertyItems.files[index].name, `${propertyItems.files[index].file.url}`)
         }
     }
 }
