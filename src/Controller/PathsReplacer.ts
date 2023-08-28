@@ -41,11 +41,13 @@ export class PathsReplacer {
       });
 
       for await (let line of rl) {
-        const REGEXP = /..\/attachments\/([0-9]+)\.([a-zA-Z]+)/;
-        const found = line.match(REGEXP);
+        const REGEXP_SRC = /..\/attachments\/([0-9]+)\.([a-zA-Z]+)/;
+        const REGEXP_LINK = /!\[(.*?)\]\((.*?)\)/;
+        const foundSRC = line.match(REGEXP_SRC);
+        const foundLink = line.match(REGEXP_LINK);
 
-        if (found) {
-          const [src, fileName, mineType] = found;
+        if (foundSRC) {
+          const [src, fileName, mineType] = foundSRC;
           const fileURL = await this.redisRepo.getKey(
             `${fileName}.${mineType}`
           );
@@ -56,6 +58,10 @@ export class PathsReplacer {
             );
           }
           line = line.replace(src, fileURL);
+        }
+        if (foundLink) {
+          line = foundLink[0].slice(1);
+          console.log({ line, foundLink });
         }
         writeStream.write(`${line}\n`);
       }
