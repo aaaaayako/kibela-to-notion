@@ -41,7 +41,7 @@ export class PathsReplacer {
       });
 
       for await (let line of rl) {
-        const REGEXP_SRC = /..\/attachments\/([0-9]+)\.([a-zA-Z]+)/;
+        const REGEXP_SRC = /..\/attachments\/([0-9]+)\.([a-zA-Z0-9]+)/;
         const REGEXP_LINK = /!\[(.*?)\]\((.*?)\)/;
         const foundSRC = line.match(REGEXP_SRC);
         const foundLink = line.match(REGEXP_LINK);
@@ -60,7 +60,7 @@ export class PathsReplacer {
           line = line.replace(src, fileURL);
         }
         if (foundLink) {
-          line = foundLink[0].slice(1);
+          line = line.slice(1);
           console.log({ line, foundLink });
         }
         writeStream.write(`${line}\n`);
