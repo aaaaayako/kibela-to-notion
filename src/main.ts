@@ -2,13 +2,17 @@ import { ReplacePaths, Tag, UploadImages, SetNotionImagesToRedis } from "./Boots
 import { Config } from "./Config";
 import { provideOptions } from "./Provider/MainProvider";
 
-const { REPLACE_PATHS, TAG_NOTES, UPLOAD_IMAGES, SET_NOTION_IMAGES_FOR_REDIS } = Config.Mode;
+const { REPLACE_PATHS, CHECK_REPLACE_PATHS, TAG_NOTES, UPLOAD_IMAGES, SET_NOTION_IMAGES_FOR_REDIS } = Config.Mode;
 
 (async () => {
   const mode = provideOptions();
   switch (mode) {
     case REPLACE_PATHS: {
       await ReplacePaths();
+      break;
+    }
+    case CHECK_REPLACE_PATHS: {
+      await ReplacePaths(true);
       break;
     }
     case TAG_NOTES: {

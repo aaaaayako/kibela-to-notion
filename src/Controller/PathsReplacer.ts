@@ -19,10 +19,14 @@ export class PathsReplacer {
     private markdownRepo: MarkdownRepository,
     private redisRepo: RedisRepository
   ) {}
-  async run() {
+  async run(isOnlyCheckDuplicate: boolean = false) {
     // マークダウンの読み込み
     const allNotesPath = this.markdownRepo.getAllNotes();
     this.#result.totalAmount = allNotesPath.length;
+
+    let duplicateFileNames = [];
+    let duplicateFlg = false;
+
     for (const paths of allNotesPath) {
       const { name, fullPath } = paths;
       console.log({ name, fullPath });
@@ -40,12 +44,12 @@ export class PathsReplacer {
         output: writeStream,
       });
 
-      for await (let line of rl) {
-        const REGEXP_SRC = /..\/attachments\/([0-9]+)\.([a-zA-Z0-9]+)/;
-        const REGEXP_LINK = /!\[(.*?)\]\((.*?)\)/;
+      const REGEXP_SRC = /..\/attachments\/([0-9]+)\.([a-zA-Z0-9]+)/;
+      const REGEXP_LINK = /!\[(.*?)\]\((.*?)\)/;
+
+      const foundAndReplace= async(line: string) => {
         const foundSRC = line.match(REGEXP_SRC);
         const foundLink = line.match(REGEXP_LINK);
-
         if (foundSRC) {
           const [src, fileName, mineType] = foundSRC;
           const fileURL = await this.redisRepo.getKey(
@@ -58,18 +62,38 @@ export class PathsReplacer {
             );
           }
           line = line.replace(src, fileURL);
+
+          if (foundLink) {
+            line = line.slice(1);
+            console.log({ line, foundLink });
+          }
         }
-        if (foundLink) {
-          line = line.slice(1);
-          console.log({ line, foundLink });
+      }
+
+      for await (let line of rl) {
+        if (isOnlyCheckDuplicate) {
+          let iteration = 0;
+          while (line.match(REGEXP_SRC)) {
+            line = line.replace(REGEXP_SRC, 'replaced');
+            iteration++;
+            if (!duplicateFlg && iteration === 2) {
+              duplicateFileNames.push(name);
+              duplicateFlg = true
+            }
+          }
+        } else {
+          while (line.match(REGEXP_SRC)) {
+            foundAndReplace(line)
+          }
+          writeStream.write(`${line}\n`);
         }
-        writeStream.write(`${line}\n`);
       }
       writeStream.end();
       this.#successCount++;
     }
     this.#result.successCount = this.#successCount;
     console.log({ successCount: this.#successCount });
+    console.log({ duplicateFileNames });
     return this.#result;
   }
 }
