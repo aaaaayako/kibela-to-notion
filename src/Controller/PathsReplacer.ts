@@ -25,10 +25,12 @@ export class PathsReplacer {
     this.#result.totalAmount = allNotesPath.length;
 
     let duplicateFileNames = [];
-    let duplicateFlg = false;
 
     for (const paths of allNotesPath) {
       const { name, fullPath } = paths;
+
+      let duplicateFlg = false;
+
       console.log({ name, fullPath });
       const readStream = this.markdownRepo.createReadFileStream({
         path: fullPath,
