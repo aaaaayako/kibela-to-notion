@@ -48,6 +48,7 @@ export class PathsReplacer {
       const REGEXP_LINK = /!\[(.*?)\]\((.*?)\)/;
 
       const foundAndReplace= async(line: string) => {
+        console.log('found')
         const foundSRC = line.match(REGEXP_SRC);
         const foundLink = line.match(REGEXP_LINK);
         if (foundSRC) {
@@ -62,11 +63,10 @@ export class PathsReplacer {
             );
           }
           line = line.replace(src, fileURL);
-
-          if (foundLink) {
-            line = line.slice(1);
-            console.log({ line, foundLink });
-          }
+        }
+        if (foundLink) {
+          line = line.slice(1);
+          console.log({ line, foundLink });
         }
       }
 
@@ -83,7 +83,25 @@ export class PathsReplacer {
           }
         } else {
           while (line.match(REGEXP_SRC)) {
-            foundAndReplace(line)
+            const foundSRC = line.match(REGEXP_SRC);
+            if (foundSRC) {
+              const [src, fileName, mineType] = foundSRC;
+              const fileURL = await this.redisRepo.getKey(
+                `${fileName}.${mineType}`
+              );
+              console.log({ name, paths, line, src, fileName, fileURL });
+              if (!fileURL) {
+                throw new Error(
+                  `${fileName}.${mineType} is not found on local Redis db: #0`
+                );
+              }
+              line = line.replace(src, fileURL);
+            }
+          }
+          const foundLink = line.match(REGEXP_LINK);
+          if (foundLink) {
+            line = line.slice(1);
+            console.log({ line, foundLink });
           }
           writeStream.write(`${line}\n`);
         }
@@ -93,7 +111,9 @@ export class PathsReplacer {
     }
     this.#result.successCount = this.#successCount;
     console.log({ successCount: this.#successCount });
-    console.log({ duplicateFileNames });
+    if (isOnlyCheckDuplicate) {
+      console.log({ duplicateFileNames });
+    }
     return this.#result;
   }
 }
