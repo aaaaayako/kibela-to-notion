@@ -100,11 +100,11 @@ export class PathsReplacer {
                 `${fileName}.${mineType}`
               );
               console.log({ name, paths, line, src, fileName, fileURL });
-              // if (!fileURL) {
-              //   throw new Error(
-              //     `${fileName}.${mineType} is not found on local Redis db: #0`
-              //   );
-              // }
+              if (!fileURL) {
+                throw new Error(
+                  `${fileName}.${mineType} is not found on local Redis db: #0`
+                );
+              }
               if (fileURL) {
                 line = line.replace(src, fileURL);
               }
