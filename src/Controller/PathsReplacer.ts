@@ -83,6 +83,14 @@ export class PathsReplacer {
               duplicateFlg = true
             }
           }
+          while (line.match(REGEXP_LINK)) {
+            line = line.replace('![', '[');
+            iteration++;
+            if (!duplicateFlg && iteration === 2) {
+              duplicateFileNames.push(name);
+              duplicateFlg = true
+            }
+          }
         } else {
           while (line.match(REGEXP_SRC)) {
             const foundSRC = line.match(REGEXP_SRC);
@@ -92,18 +100,18 @@ export class PathsReplacer {
                 `${fileName}.${mineType}`
               );
               console.log({ name, paths, line, src, fileName, fileURL });
-              if (!fileURL) {
-                throw new Error(
-                  `${fileName}.${mineType} is not found on local Redis db: #0`
-                );
+              // if (!fileURL) {
+              //   throw new Error(
+              //     `${fileName}.${mineType} is not found on local Redis db: #0`
+              //   );
+              // }
+              if (fileURL) {
+                line = line.replace(src, fileURL);
               }
-              line = line.replace(src, fileURL);
             }
           }
-          const foundLink = line.match(REGEXP_LINK);
-          if (foundLink) {
-            line = line.slice(1);
-            console.log({ line, foundLink });
+          while (line.match(REGEXP_LINK)) {
+            line = line.replace('![', '[');
           }
           writeStream.write(`${line}\n`);
         }
