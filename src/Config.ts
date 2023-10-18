@@ -12,6 +12,7 @@ if (config) {
 export namespace Config {
   export namespace Mode {
     export const REPLACE_PATHS = "REPLACE_PATHS";
+    export const REPLACE_COMMENT = "REPLACE_COMMENT";
     export const CHECK_REPLACE_PATHS = "CHECK_REPLACE_PATHS";
     export const TAG_NOTES = "TAG_NOTES";
     export const UPLOAD_IMAGES = "UPLOAD_IMAGES";

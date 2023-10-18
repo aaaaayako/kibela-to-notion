@@ -19,7 +19,7 @@ export class PathsReplacer {
     private markdownRepo: MarkdownRepository,
     private redisRepo: RedisRepository
   ) {}
-  async run(isOnlyCheckDuplicate: boolean = false) {
+  async run(isOnlyCheckDuplicate: boolean = false, isReplaceComment: boolean = false) {
     // マークダウンの読み込み
     const allNotesPath = this.markdownRepo.getAllNotes();
     this.#result.totalAmount = allNotesPath.length;
@@ -48,72 +48,57 @@ export class PathsReplacer {
 
       const REGEXP_SRC = /..\/attachments\/([0-9]+)\.([a-zA-Z0-9]+)/;
       const REGEXP_LINK = /!\[(.*?)\]\((.*?)\)/;
-
-      const foundAndReplace= async(line: string) => {
-        console.log('found')
-        const foundSRC = line.match(REGEXP_SRC);
-        const foundLink = line.match(REGEXP_LINK);
-        if (foundSRC) {
-          const [src, fileName, mineType] = foundSRC;
-          const fileURL = await this.redisRepo.getKey(
-            `${fileName}.${mineType}`
-          );
-          console.log({ name, paths, line, src, fileName, fileURL });
-          if (!fileURL) {
-            throw new Error(
-              `${fileName}.${mineType} is not found on local Redis db: #0`
-            );
-          }
-          line = line.replace(src, fileURL);
-        }
-        if (foundLink) {
-          line = line.slice(1);
-          console.log({ line, foundLink });
-        }
-      }
+      const REGEXP_COMMENT = /content: http/;
 
       for await (let line of rl) {
-        if (isOnlyCheckDuplicate) {
-          let iteration = 0;
-          while (line.match(REGEXP_SRC)) {
-            line = line.replace(REGEXP_SRC, 'replaced');
-            iteration++;
-            if (!duplicateFlg && iteration === 2) {
-              duplicateFileNames.push(name);
-              duplicateFlg = true
-            }
-          }
-          while (line.match(REGEXP_LINK)) {
-            line = line.replace('![', '[');
-            iteration++;
-            if (!duplicateFlg && iteration === 2) {
-              duplicateFileNames.push(name);
-              duplicateFlg = true
-            }
-          }
-        } else {
-          while (line.match(REGEXP_SRC)) {
-            const foundSRC = line.match(REGEXP_SRC);
-            if (foundSRC) {
-              const [src, fileName, mineType] = foundSRC;
-              const fileURL = await this.redisRepo.getKey(
-                `${fileName}.${mineType}`
-              );
-              console.log({ name, paths, line, src, fileName, fileURL });
-              if (!fileURL) {
-                throw new Error(
-                  `${fileName}.${mineType} is not found on local Redis db: #0`
-                );
-              }
-              if (fileURL) {
-                line = line.replace(src, fileURL);
-              }
-            }
-          }
-          while (line.match(REGEXP_LINK)) {
-            line = line.replace('![', '[');
-          }
+        if (isReplaceComment && line.match(REGEXP_COMMENT)) {
+          console.log({line})
+          line = line.replace('content: http', 'content: "http') + '"';
+          console.log({line})
           writeStream.write(`${line}\n`);
+        } else {
+          if (isOnlyCheckDuplicate) {
+            let iteration = 0;
+            while (line.match(REGEXP_SRC)) {
+              line = line.replace(REGEXP_SRC, 'replaced');
+              iteration++;
+              if (!duplicateFlg && iteration === 2) {
+                duplicateFileNames.push(name);
+                duplicateFlg = true
+              }
+            }
+            while (line.match(REGEXP_LINK)) {
+              line = line.replace('![', '[');
+              iteration++;
+              if (!duplicateFlg && iteration === 2) {
+                duplicateFileNames.push(name);
+                duplicateFlg = true
+              }
+            }
+          } else {
+            while (line.match(REGEXP_SRC)) {
+              const foundSRC = line.match(REGEXP_SRC);
+              if (foundSRC) {
+                const [src, fileName, mineType] = foundSRC;
+                const fileURL = await this.redisRepo.getKey(
+                  `${fileName}.${mineType}`
+                );
+                console.log({ name, paths, line, src, fileName, fileURL });
+                if (!fileURL) {
+                  throw new Error(
+                    `${fileName}.${mineType} is not found on local Redis db: #0`
+                  );
+                }
+                if (fileURL) {
+                  line = line.replace(src, fileURL);
+                }
+              }
+            }
+            while (line.match(REGEXP_LINK)) {
+              line = line.replace('![', '[');
+            }
+            writeStream.write(`${line}\n`);
+          }
         }
       }
       writeStream.end();

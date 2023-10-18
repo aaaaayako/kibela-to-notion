@@ -5,7 +5,7 @@ import { Config } from "~/Config";
 
 const { SHOW_FRIENDLY_ERROR_STACK, NO_DELAY, DB } = Config.Redis;
 
-export const ReplacePaths = async (isOnlyCheckDuplicate: boolean = false) => {
+export const ReplacePaths = async (isOnlyCheckDuplicate: boolean = false, isReplaceComment: boolean = false) => {
   const options = await generateReplaceOption();
 
   const allResult = await Promise.all(
@@ -18,7 +18,7 @@ export const ReplacePaths = async (isOnlyCheckDuplicate: boolean = false) => {
           noDelay: NO_DELAY,
           db: DB.IMAGE,
         })
-      ).run(isOnlyCheckDuplicate);
+      ).run(isOnlyCheckDuplicate, isReplaceComment);
     })
   );
   console.dir({ allResult }, { depth: null });
