@@ -12,8 +12,11 @@ if (config) {
 export namespace Config {
   export namespace Mode {
     export const REPLACE_PATHS = "REPLACE_PATHS";
+    export const REPLACE_COMMENT = "REPLACE_COMMENT";
+    export const CHECK_REPLACE_PATHS = "CHECK_REPLACE_PATHS";
     export const TAG_NOTES = "TAG_NOTES";
     export const UPLOAD_IMAGES = "UPLOAD_IMAGES";
+    export const SET_NOTION_IMAGES_FOR_REDIS = "SET_NOTION_IMAGES_FOR_REDIS";
   }
 
   export namespace Markdown {
@@ -28,7 +31,7 @@ export namespace Config {
   }
 
   export namespace Storage {
-    export type Mode = "S3" | "GoogleDrive";
+    export type Mode = "S3" | "GoogleDrive" | "Notion";
     export namespace GoogleDrive {
       // NOTE: your credential file should be in the same directory as this file
       export const CREDENTIALS_PATH = path.resolve(
@@ -47,6 +50,8 @@ export namespace Config {
   export namespace Notion {
     export const KEY = process.env.NOTION_KEY!;
     export const DATABASE = process.env.NOTION_DATABASE!;
+    export const PAGE = process.env.NOTION_PAGE!;
+    export const IMAGE_PROP_ID = process.env.IMAGE_PROP_ID!;
     export namespace Props {
       export const NAME = "Name";
       export const PREFIX_NUMBER = "PrefixNumber";

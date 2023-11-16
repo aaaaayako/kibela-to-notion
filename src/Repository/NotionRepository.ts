@@ -10,6 +10,20 @@ export class NotionRepository {
     this.notion = new Client({ auth: authKey });
   }
 
+  async getPagePropertyItems(pageId: string, propertyId: string) {
+    try {
+      const requestPayload: RequestParameters = {
+        path: `pages/${pageId}/properties/${propertyId}`,
+        method: "get"
+      }
+      const items = await this.notion.request(requestPayload)
+      console.log({items})
+      return items
+    } catch (error) {
+      throw error
+    }
+  }
+
   async getAllPageFromDatabase(databaseId: string, prefixNumbers: number[]) {
     let allPages: Page[] = [];
 

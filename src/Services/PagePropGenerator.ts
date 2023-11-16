@@ -25,6 +25,7 @@ export class PagePropGenerator {
     private redisRepo: RedisRepository
   ) {}
   async #getIdOrNameFromArray<T extends any[]>(key: string, array: T) {
+    if (!array) return await Promise.resolve([])
     return await Promise.all(
       array.map(async name => {
         const id = await this.redisRepo.getKey(`${key}:${name}`);
